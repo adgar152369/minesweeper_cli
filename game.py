@@ -25,7 +25,7 @@ class Game:
         self.game_board = {}
         for row in range(8):
             for col in range(8):
-                self.game_board[(row, col)] = {"is_mine": False, "display": "[ ]"}
+                self.game_board[(row, col)] = {"is_mine": False, "display": "[x]"}
 
     def place_mines(self):
         for row in range(8):
@@ -35,15 +35,29 @@ class Game:
             if self.game_board[(random_row, random_col)]["is_mine"] == True:
                 self.game_board[(random_row, random_col)]["display"] = '[B]'
 
-    def place_coordinates(self):
+    def place_coordinates(self) -> bool:
         coords = self.get_user_coords_input()
         x, y = coords
-        print(self.game_board[(x, y)])
+        if not self.determine_hit(x, y):
+            self.game_board[(x, y)]['display'] = '[ ]'
+            self.print_board()
+            return False
+        else:
+            self.game_board[(x, y)]['display'] = '[*]'
+            self.print_board()
+            return True
 
     def get_user_coords_input(self) -> tuple:
         x_coord = int(input("Enter an 'x' coordinate (0-7): "))
         y_coord = int(input("Enter an 'y' coordinate (0-7): "))
         return (x_coord, y_coord)
+
+    def determine_hit(self, x, y) -> bool:
+        if self.game_board[(x, y)]['is_mine'] == True:
+            print("Kaboom!")
+            return True
+        else:
+            return False
 
 class ClearedBlock:
     def __init__(self):
@@ -60,6 +74,11 @@ class Mine:
         return 'a mine'
 
 minesweeper_game = Game()
-minesweeper_game.start_game()
 
-minesweeper_game.place_coordinates()
+minesweeper_game.start_game()
+while True:
+    game_result = minesweeper_game.place_coordinates()
+    if (game_result):
+        break
+    else:
+        continue
