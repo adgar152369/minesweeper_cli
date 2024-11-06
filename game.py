@@ -35,6 +35,16 @@ class Game:
             if self.game_board[(random_row, random_col)]["is_mine"] == True:
                 self.game_board[(random_row, random_col)]["display"] = '[B]'
 
+    def place_coordinates(self):
+        coords = self.get_user_coords_input()
+        x, y = coords
+        print(self.game_board[(x, y)])
+
+    def get_user_coords_input(self) -> tuple:
+        x_coord = int(input("Enter an 'x' coordinate (0-7): "))
+        y_coord = int(input("Enter an 'y' coordinate (0-7): "))
+        return (x_coord, y_coord)
+
 class ClearedBlock:
     def __init__(self):
         self.space = ""
@@ -51,3 +61,5 @@ class Mine:
 
 minesweeper_game = Game()
 minesweeper_game.start_game()
+
+minesweeper_game.place_coordinates()
