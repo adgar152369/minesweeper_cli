@@ -2,43 +2,35 @@ import random
 
 class GameBoard:
     def __init__(self):
-        self.game_board = []
+        self.game_board = {}
         self.mines = [Mine() for mine in range(0, random.randint(0, 4))]
         self.cleared_blocks = 8 * 8
 
-    def generate_game_board(self) -> None:
+    def generate_game_board(self):
         self.clear_board()
-        mines_locations = self.generate_mines()
-        # place mines
-        self.place_mines(mines_locations)
+        self.place_mines()
         self.print_board()
 
-    def place_mines(self, mines):
-        for row in range(len(self.game_board)):
-            self.game_board[row][mines[row]] = '[B]'
-
     def print_board(self):
-        for row in self.game_board:
-            print("".join(row))
+        for row in range(8):
+            row_display = []
+            for col in range(8):
+                row_display.append(self.game_board[(row, col)]["display"])
+            print(" ".join(row_display))
 
     def clear_board(self):
-        self.game_board = []
-        for row in range(9):
-            current_row = []
-            for col in range(9):
-                current_row.append('[ ]')
-            self.game_board.append(current_row)
+        self.game_board = {}
+        for row in range(8):
+            for col in range(8):
+                self.game_board[(row, col)] = {"is_mine": False, "display": "[ ]"}
 
-    def generate_mines(self):
-        random_indeces = []
-        # generate random indexes for mines
-        board_length = len(self.game_board) * len(self.game_board[0])
-        board_half_length = int(board_length / 2)
-        for i in range(board_half_length):
-            random_index = random.randint(0, 8)
-            if not random_index in random_indeces:
-                random_indeces.append(random_index)
-        return random_indeces
+    def place_mines(self):
+        for row in range(8):
+            random_row = random.randint(0, 7)
+            random_col = random.randint(0, 7)
+            self.game_board[(random_row, random_col)]["is_mine"] = True
+            if self.game_board[(random_row, random_col)]["is_mine"] == True:
+                self.game_board[(random_row, random_col)]["display"] = '[B]'
 
 class ClearedBlock:
     def __init__(self):
