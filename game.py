@@ -14,19 +14,10 @@ class GameBoard:
         self.print_board()
 
     def place_mines(self, mines):
-        print(mines[0], mines[1], mines[2])
-        self.game_board[0][mines[0]] = '[B]'
-        self.game_board[1][mines[1]] = '[B]'
-        self.game_board[2][mines[2]] = '[B]'
-        self.game_board[3][mines[3]] = '[B]'
-        self.game_board[4][mines[4]] = '[B]'
-        self.game_board[5][mines[5]] = '[B]'
-        self.game_board[6][mines[6]] = '[B]'
-        self.game_board[7][mines[7]] = '[B]'
-
+        for row in range(len(self.game_board)):
+            self.game_board[row][mines[row]] = '[B]'
 
     def print_board(self):
-        # self.clear_board()
         for row in self.game_board:
             print("".join(row))
 
@@ -43,9 +34,8 @@ class GameBoard:
         # generate random indexes for mines
         board_length = len(self.game_board) * len(self.game_board[0])
         board_half_length = int(board_length / 2)
-        # print(board_half_length)
         for i in range(board_half_length):
-            random_index = random.randint(0, 7)
+            random_index = random.randint(0, 8)
             if not random_index in random_indeces:
                 random_indeces.append(random_index)
         return random_indeces
