@@ -1,10 +1,13 @@
 import random
 
-class GameBoard:
+class Game:
     def __init__(self):
         self.game_board = {}
         self.mines = [Mine() for mine in range(0, random.randint(0, 4))]
         self.cleared_blocks = 8 * 8
+
+    def start_game(self):
+        self.generate_game_board()
 
     def generate_game_board(self):
         self.clear_board()
@@ -46,5 +49,5 @@ class Mine:
     def __repr__(self) -> str:
         return 'a mine'
 
-game_board = GameBoard()
-game_board.generate_game_board()
+minesweeper_game = Game()
+minesweeper_game.start_game()
