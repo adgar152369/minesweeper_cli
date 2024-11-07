@@ -28,6 +28,9 @@ class Game:
                 current_row.append(self.game_board[(x, y)]['symbol'])
             print(" ".join(current_row))
 
+    def show_points(self):
+        print('Points: {}'.format(self.cleared_cells_count))
+
     def place_mines(self):
         placed_mines = 0
         while placed_mines < self.rows / 2:
@@ -37,20 +40,39 @@ class Game:
             # Check if there's already a mine here
             if not self.game_board[cell]['is_mine']:
                 self.game_board[cell]['is_mine'] = True
-                self.game_board[cell]['symbol'] = '[M]'
+                self.game_board[cell]['symbol'] = '[✴]'
                 placed_mines += 1
 
     def place_coordinates(self):
         coords = self.get_coordinates() # (int, int)
-        is_coords_valid = self.determine_hit(coords)
+        is_coords_invalid = self.determine_hit(coords)
 
-        if is_coords_valid:
+        if not is_coords_invalid:
             x, y = coords
-            self.game_board[(x, y)]['symbol'] = '[c]'
+            if not self.game_board[(x, y)]['symbol'] == '[c]':
+                self.cleared_cells_count += 1
+                self.game_board[(x, y)]['symbol'] = '[c]'
+            self.clear_adjacent_cells(x,y)
             self.print_game_board()
         else:
             self.did_hit_mine = True
-            self.end_game()
+
+    def clear_adjacent_cells(self, x, y):
+        adjacent_offsets = [
+            (-1, 0), (1, 0), (0, -1), (0, 1),
+            (-1, -1), (-1, 1), (1, -1), (1, 1)
+        ]
+        for dx, dy in adjacent_offsets:
+            adj_x = x+dx
+            adj_y = y+dy
+            if 0 <= adj_x < self.rows and 0 <= adj_y < self.cols:
+                if self.game_board[(adj_x, adj_y)]['symbol'] == '[c]':
+                    continue
+                elif not self.determine_hit((adj_x, adj_y)):
+                    self.game_board[(adj_x, adj_y)]['symbol'] = '[c]'
+                    self.cleared_cells_count += 1
+                else:
+                    continue
 
     def get_coordinates(self) -> tuple:
         x = int(input('Enter an x coordinate from 0-{}: '.format(self.rows - 1)))
@@ -60,10 +82,10 @@ class Game:
     def determine_hit(self, coords):
         x, y = coords
         if self.game_board[(x, y)]['is_mine']:
-            print('kaboom')
-            return False
-        else:
+            # print('kaboom')
             return True
+        else:
+            return False
 
     def end_game(self):
         self.is_ended = True
@@ -73,6 +95,7 @@ new_game.start_game()
 
 while not new_game.is_ended:
     new_game.place_coordinates()
+    new_game.show_points()
 
     if new_game.did_hit_mine:
         new_game.end_game()
