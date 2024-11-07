@@ -1,84 +1,80 @@
 import random
 
 class Game:
-    def __init__(self):
+    def __init__(self, rows, cols):
         self.game_board = {}
-        self.mines = [Mine() for mine in range(0, random.randint(0, 4))]
-        self.cleared_blocks = 8 * 8
+        self.rows = rows
+        self.cols = cols
+        self.is_ended = False
+        self.did_hit_mine = False
+        self.mine_count = 0
+        self.cleared_cells_count = 0
 
     def start_game(self):
         self.generate_game_board()
+        self.print_game_board()
 
     def generate_game_board(self):
-        self.clear_board()
+        for x in range(self.rows):
+            current_row = []
+            for y in range(self.cols):
+                self.game_board[(x, y)] = {'is_mine': False, 'symbol': '[ ]'}
         self.place_mines()
-        self.print_board()
 
-    def print_board(self):
-        for row in range(8):
-            row_display = []
-            for col in range(8):
-                row_display.append(self.game_board[(row, col)]["display"])
-            print(" ".join(row_display))
-
-    def clear_board(self):
-        self.game_board = {}
-        for row in range(8):
-            for col in range(8):
-                self.game_board[(row, col)] = {"is_mine": False, "display": "[x]"}
+    def print_game_board(self):
+        for x in range(self.rows):
+            current_row = []
+            for y in range(self.cols):
+                current_row.append(self.game_board[(x, y)]['symbol'])
+            print(" ".join(current_row))
 
     def place_mines(self):
-        for row in range(8):
-            random_row = random.randint(0, 7)
-            random_col = random.randint(0, 7)
-            self.game_board[(random_row, random_col)]["is_mine"] = True
-            if self.game_board[(random_row, random_col)]["is_mine"] == True:
-                self.game_board[(random_row, random_col)]["display"] = '[B]'
+        placed_mines = 0
+        while placed_mines < self.rows / 2:
+            row = random.randint(0, self.rows - 1)
+            col = random.randint(0, self.cols - 1)
+            cell = (row, col)
+            # Check if there's already a mine here
+            if not self.game_board[cell]['is_mine']:
+                self.game_board[cell]['is_mine'] = True
+                self.game_board[cell]['symbol'] = '[M]'
+                placed_mines += 1
 
-    def place_coordinates(self) -> bool:
-        coords = self.get_user_coords_input()
+    def place_coordinates(self):
+        coords = self.get_coordinates() # (int, int)
+        is_coords_valid = self.determine_hit(coords)
+
+        if is_coords_valid:
+            x, y = coords
+            self.game_board[(x, y)]['symbol'] = '[c]'
+            self.print_game_board()
+        else:
+            self.did_hit_mine = True
+            self.end_game()
+
+    def get_coordinates(self) -> tuple:
+        x = int(input('Enter an x coordinate from 0-{}: '.format(self.rows - 1)))
+        y = int(input('Enter an y coordinate from 0-{}: '.format(self.cols - 1)))
+        return (x, y)
+
+    def determine_hit(self, coords):
         x, y = coords
-        if not self.determine_hit(x, y):
-            self.game_board[(x, y)]['display'] = '[ ]'
-            self.print_board()
+        if self.game_board[(x, y)]['is_mine']:
+            print('kaboom')
             return False
         else:
-            self.game_board[(x, y)]['display'] = '[*]'
-            self.print_board()
             return True
 
-    def get_user_coords_input(self) -> tuple:
-        x_coord = int(input("Enter an 'x' coordinate (0-7): "))
-        y_coord = int(input("Enter an 'y' coordinate (0-7): "))
-        return (x_coord, y_coord)
+    def end_game(self):
+        self.is_ended = True
 
-    def determine_hit(self, x, y) -> bool:
-        if self.game_board[(x, y)]['is_mine'] == True:
-            print("Kaboom!")
-            return True
-        else:
-            return False
+new_game = Game(12, 12)
+new_game.start_game()
 
-class ClearedBlock:
-    def __init__(self):
-        self.space = ""
-        self.adjacent_mines = 0
+while not new_game.is_ended:
+    new_game.place_coordinates()
 
-    def determine_adjacent_mines(self):
-        pass
-
-class Mine:
-    name = 'mine'
-
-    def __repr__(self) -> str:
-        return 'a mine'
-
-minesweeper_game = Game()
-
-minesweeper_game.start_game()
-while True:
-    game_result = minesweeper_game.place_coordinates()
-    if (game_result):
-        break
+    if new_game.did_hit_mine:
+        new_game.end_game()
     else:
         continue
