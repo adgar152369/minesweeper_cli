@@ -99,5 +99,7 @@ while not new_game.is_ended:
 
     if new_game.did_hit_mine:
         new_game.end_game()
+        print('kaboom! You lose.')
+        print('Your points: {}'.format(new_game.cleared_cells_count))
     else:
         continue
