@@ -40,7 +40,7 @@ class Game:
             # Check if there's already a mine here
             if not self.game_board[cell]['is_mine']:
                 self.game_board[cell]['is_mine'] = True
-                self.game_board[cell]['symbol'] = '[✸]'
+                # self.game_board[cell]['symbol'] = '[✸]'
                 placed_mines += 1
 
     def place_coordinates(self):
