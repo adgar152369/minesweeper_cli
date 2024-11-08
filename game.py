@@ -18,7 +18,7 @@ class Game:
         for x in range(self.rows):
             current_row = []
             for y in range(self.cols):
-                self.game_board[(x, y)] = {'is_mine': False, 'symbol': '[ ]'}
+                self.game_board[(x, y)] = {'is_mine': False, 'symbol': '[X]'}
         self.place_mines()
 
     def print_game_board(self):
@@ -40,7 +40,7 @@ class Game:
             # Check if there's already a mine here
             if not self.game_board[cell]['is_mine']:
                 self.game_board[cell]['is_mine'] = True
-                self.game_board[cell]['symbol'] = '[✴]'
+                self.game_board[cell]['symbol'] = '[✸]'
                 placed_mines += 1
 
     def place_coordinates(self):
@@ -49,9 +49,9 @@ class Game:
 
         if not is_coords_invalid:
             x, y = coords
-            if not self.game_board[(x, y)]['symbol'] == '[c]':
+            if not self.game_board[(x, y)]['symbol'] == '[ ]':
                 self.cleared_cells_count += 1
-                self.game_board[(x, y)]['symbol'] = '[c]'
+                self.game_board[(x, y)]['symbol'] = '[ ]'
             self.clear_adjacent_cells(x,y)
             self.print_game_board()
         else:
@@ -66,11 +66,12 @@ class Game:
             adj_x = x+dx
             adj_y = y+dy
             if 0 <= adj_x < self.rows and 0 <= adj_y < self.cols:
-                if self.game_board[(adj_x, adj_y)]['symbol'] == '[c]':
+                if self.game_board[(adj_x, adj_y)]['symbol'] == '[ ]':
                     continue
                 elif not self.determine_hit((adj_x, adj_y)):
-                    self.game_board[(adj_x, adj_y)]['symbol'] = '[c]'
+                    self.game_board[(adj_x, adj_y)]['symbol'] = '[ ]'
                     self.cleared_cells_count += 1
+                    self.mark_number_of_adjacent_mines((adj_x, adj_y), adjacent_offsets)
                 else:
                     continue
 
@@ -87,6 +88,18 @@ class Game:
         else:
             return False
 
+    def mark_number_of_adjacent_mines(self, coords, offsets):
+        x, y = coords
+        mine_count = 0
+        for dx, dy in offsets:
+            ax = dx+x
+            ay = dy+y
+            if 0 <= ax < self.rows and 0 <= ay < self.cols:
+                if self.game_board[(ax, ay)]['is_mine']:
+                    mine_count += 1
+                    self.game_board[(x, y)]['symbol'] = '[{}]'.format(mine_count)
+                    print(self.game_board[(ax, ay)], (ax, ay))
+
     def end_game(self):
         self.is_ended = True
 
@@ -100,6 +113,5 @@ while not new_game.is_ended:
     if new_game.did_hit_mine:
         new_game.end_game()
         print('kaboom! You lose.')
-        print('Your points: {}'.format(new_game.cleared_cells_count))
-    else:
-        continue
+
+print('Your points: {}'.format(new_game.cleared_cells_count))
