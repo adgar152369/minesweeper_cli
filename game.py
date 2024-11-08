@@ -83,7 +83,6 @@ class Game:
     def determine_hit(self, coords):
         x, y = coords
         if self.game_board[(x, y)]['is_mine']:
-            # print('kaboom')
             return True
         else:
             return False
@@ -98,7 +97,6 @@ class Game:
                 if self.game_board[(ax, ay)]['is_mine']:
                     mine_count += 1
                     self.game_board[(x, y)]['symbol'] = '[{}]'.format(mine_count)
-                    print(self.game_board[(ax, ay)], (ax, ay))
 
     def end_game(self):
         self.is_ended = True
